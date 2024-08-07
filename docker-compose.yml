@@ -1,6 +1,27 @@
 version: '3.9'
 
 services:
+  pwneu.gateway:
+    image: ${DOCKER_REGISTRY-}pwneu.gateway
+    container_name: pwneu.gateway
+    depends_on:
+      - pwneu.api
+    build:
+      context: .
+      dockerfile: src/Pwneu.Gateway/Dockerfile
+    ports:
+      - "37100:8080"
+      - "37101:8081"
+    environment:
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/home/app/.aspnet/https/pwneu.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${SSL_CERTIFICATE_PASSWORD}
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+    volumes:
+      - ./.containers/certs:/home/app/.aspnet/https:ro
+    networks:
+      - pwneu
+
   pwneu.api:
     image: ${DOCKER_REGISTRY-}pwneu.api
     container_name: pwneu.api
@@ -8,6 +29,7 @@ services:
       - pwneu.db
       - pwneu.cache
       - pwneu.dashboard
+      - pwneu.mq
     build:
       context: .
       dockerfile: src/Pwneu.Api/Dockerfile
@@ -38,12 +60,13 @@ services:
     container_name: pwneu.smtp
     depends_on:
       - pwneu.api
+      - pwneu.mq
     build:
       context: .
       dockerfile: src/Pwneu.Smtp/Dockerfile
     ports:
-      - "63010:8080"
-      - "63011:8081"
+      - "37300:8080"
+      - "37301:8081"
     environment:
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/home/app/.aspnet/https/pwneu.pfx
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${SSL_CERTIFICATE_PASSWORD}
