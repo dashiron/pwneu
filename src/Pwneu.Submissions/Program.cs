@@ -1,13 +1,10 @@
 using MassTransit;
 using Pwneu.Shared.Common;
-using Pwneu.Smtp.Shared.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddOptions<SmtpOptions>()
-    .BindConfiguration(nameof(SmtpOptions))
-    .ValidateDataAnnotations()
-    .ValidateOnStart();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var assembly = typeof(Program).Assembly;
 
