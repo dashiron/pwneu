@@ -12,9 +12,7 @@ var assembly = typeof(Program).Assembly;
 builder.Services.AddMassTransit(busConfigurator =>
 {
     busConfigurator.SetKebabCaseEndpointNameFormatter();
-
     busConfigurator.AddConsumers(assembly);
-
     busConfigurator.UsingRabbitMq((context, configurator) =>
     {
         configurator.Host(new Uri(builder.Configuration[Consts.MessageBrokerHost]!), h =>
@@ -22,7 +20,6 @@ builder.Services.AddMassTransit(busConfigurator =>
             h.Username(builder.Configuration[Consts.MessageBrokerUsername]!);
             h.Password(builder.Configuration[Consts.MessageBrokerPassword]!);
         });
-
         configurator.ConfigureEndpoints(context);
     });
 });
