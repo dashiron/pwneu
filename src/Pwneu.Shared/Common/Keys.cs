@@ -13,4 +13,5 @@ public static class Keys
     public static string User(string id) => $"user:{id}";
     public static string UserStats(string id) => $"user:{id}:stats";
     public static string Flags(Guid challengeId) => $"flag:{challengeId}";
+    public static string HasSolved(string userId, Guid challengeId) => $"hasSolved:{userId}:{challengeId}";
 }

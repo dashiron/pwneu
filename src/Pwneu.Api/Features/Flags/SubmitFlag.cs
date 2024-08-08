@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using FluentValidation;
+using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Pwneu.Api.Shared.Data;
@@ -18,7 +19,7 @@ namespace Pwneu.Api.Features.Flags;
 /// </summary>
 public static class SubmitFlag
 {
-    public record Command(string UserId, Guid ChallengeId, string Value) : IRequest<Result<FlagStatus>>;
+    public record Command(string UserId, Guid ChallengeId, string Flag) : IRequest<Result<FlagStatus>>;
 
     private static readonly Error UserNotFound = new("SubmitFlag.UserNotFound",
         "The user with the specified ID was not found");
@@ -32,6 +33,7 @@ public static class SubmitFlag
     internal sealed class Handler(
         ApplicationDbContext context,
         IFusionCache cache,
+        IPublishEndpoint publishEndpoint,
         IValidator<Command> validator)
         : IRequestHandler<Command, Result<FlagStatus>>
     {
@@ -127,7 +129,7 @@ public static class SubmitFlag
                 return FlagStatus.DeadlineReached;
             if (await IsMaxAttemptReachedAsync())
                 return FlagStatus.MaxAttemptReached;
-            if (challengeFlags.Any(f => f.Equals(request.Value))) // Check if the submission is correct.
+            if (challengeFlags.Any(f => f.Equals(request.Flag))) // Check if the submission is correct.
             {
                 flagStatus = FlagStatus.Correct;
                 var solve = new Solve
@@ -154,7 +156,7 @@ public static class SubmitFlag
                 Id = Guid.NewGuid(),
                 UserId = user.Id,
                 ChallengeId = challenge.Id,
-                Value = request.Value,
+                Value = request.Flag,
                 SubmittedAt = DateTime.UtcNow,
                 FlagStatus = flagStatus,
             };
@@ -178,6 +180,15 @@ public static class SubmitFlag
                     ? user with { CorrectAttempts = user.CorrectAttempts + 1 }
                     : user with { IncorrectAttempts = user.IncorrectAttempts + 1 },
                 token: cancellationToken);
+
+            await publishEndpoint.Publish(new SubmittedEvent
+            {
+                UserId = request.UserId,
+                ChallengeId = request.ChallengeId,
+                Flag = request.Flag,
+                SubmittedAt = DateTime.UtcNow,
+                IsCorrect = flagStatus == FlagStatus.Correct,
+            }, cancellationToken);
 
             return flagStatus;
 
@@ -233,12 +244,12 @@ public static class SubmitFlag
         public void MapEndpoint(IEndpointRouteBuilder app)
         {
             app.MapPost("challenges/{challengeId:Guid}/submit",
-                    async (Guid challengeId, string value, ClaimsPrincipal claims, ISender sender) =>
+                    async (Guid challengeId, string flag, ClaimsPrincipal claims, ISender sender) =>
                     {
                         var userId = claims.GetLoggedInUserId<string>();
                         if (userId is null) return Results.BadRequest();
 
-                        var command = new Command(userId, challengeId, value);
+                        var command = new Command(userId, challengeId, flag);
                         var result = await sender.Send(command);
 
                         return result.IsFailure ? Results.NotFound(result.Error) : Results.Ok(result.Value.ToString());
@@ -260,7 +271,7 @@ public static class SubmitFlag
                 .NotEmpty()
                 .WithMessage("Challenge ID is required.");
 
-            RuleFor(c => c.Value)
+            RuleFor(c => c.Flag)
                 .NotEmpty()
                 .WithMessage("Flag value is required.")
                 .MaximumLength(100)
