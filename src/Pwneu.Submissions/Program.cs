@@ -65,3 +65,6 @@ app.ApplyMigrations();
 app.UseHttpsRedirection();
 
 app.Run();
+
+// Make Program class public to implement the fixture for the WebApplicationFactory in the integration tests.
+public partial class Program;

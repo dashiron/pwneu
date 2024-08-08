@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pwneu.Gateway", "src\Pwneu.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pwneu.Submissions", "src\Pwneu.Submissions\Pwneu.Submissions.csproj", "{E7CD340E-1202-460E-A36E-841F0DF1C6C7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pwneu.Submissions.IntegrationTests", "tests\Pwneu.Submissions.IntegrationTests\Pwneu.Submissions.IntegrationTests.csproj", "{6CA3ECB7-D56C-4C86-A776-71942FB4D76B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,10 @@ Global
 		{E7CD340E-1202-460E-A36E-841F0DF1C6C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7CD340E-1202-460E-A36E-841F0DF1C6C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7CD340E-1202-460E-A36E-841F0DF1C6C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CA3ECB7-D56C-4C86-A776-71942FB4D76B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CA3ECB7-D56C-4C86-A776-71942FB4D76B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CA3ECB7-D56C-4C86-A776-71942FB4D76B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CA3ECB7-D56C-4C86-A776-71942FB4D76B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,5 +72,6 @@ Global
 		{274EB5AC-615C-45B6-B92E-1DE2D1BE89C8} = {DBF2348C-56C9-41CB-A26E-833EC3238D3F}
 		{2A05F1B9-70A9-47BF-91E3-9D66BD8DDCF4} = {DBF2348C-56C9-41CB-A26E-833EC3238D3F}
 		{E7CD340E-1202-460E-A36E-841F0DF1C6C7} = {DBF2348C-56C9-41CB-A26E-833EC3238D3F}
+		{6CA3ECB7-D56C-4C86-A776-71942FB4D76B} = {D463125D-0C2D-43FC-A06F-4DA2EF8ECCE3}
 	EndGlobalSection
 EndGlobal
