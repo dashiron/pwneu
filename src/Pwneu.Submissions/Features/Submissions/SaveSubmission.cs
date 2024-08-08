@@ -39,7 +39,7 @@ public static class SaveSubmission
         }
     }
 
-    public class Listener(ISender sender, ILogger<Endpoint> logger) : IConsumer<SubmittedEvent>
+    public class Listener(ISender sender, ILogger<Listener> logger) : IConsumer<SubmittedEvent>
     {
         public async Task Consume(ConsumeContext<SubmittedEvent> context)
         {
